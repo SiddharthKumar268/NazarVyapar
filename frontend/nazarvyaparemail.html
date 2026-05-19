@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NazarVyapar — Email Alerts</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --surface2: #1a1a1a;
+    --border: #222222;
+    --accent: #ff3c3c;
+    --accent2: #ff7a00;
+    --green: #00e676;
+    --text: #f0f0f0;
+    --muted: #555;
+    --card-glow: rgba(255, 60, 60, 0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,60,60,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,60,60,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 40px 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 48px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .logo {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .logo-name {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    background: linear-gradient(135deg, #ff3c3c, #ff7a00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .logo-tagline {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  .status-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 8px 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 8px var(--green);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(0.85); }
+  }
+
+  /* Page title */
+  .page-title {
+    margin-bottom: 32px;
+  }
+
+  .page-title h1 {
+    font-size: clamp(28px, 5vw, 42px);
+    font-weight: 800;
+    letter-spacing: -2px;
+    line-height: 1.1;
+  }
+
+  .page-title h1 span {
+    color: var(--accent);
+  }
+
+  .page-title p {
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.5px;
+  }
+
+  /* Grid layout */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+
+  .grid-full { grid-column: 1 / -1; }
+
+  @media (max-width: 640px) {
+    .grid { grid-template-columns: 1fr; }
+    .grid-full { grid-column: 1; }
+  }
+
+  /* Cards */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--card-glow);
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+
+  .card:hover { border-color: #333; transform: translateY(-2px); }
+  .card:hover::before { opacity: 1; }
+
+  .card-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-label::before {
+    content: '';
+    width: 20px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  /* Form elements */
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  label {
+    display: block;
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--muted);
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  input, select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    appearance: none;
+  }
+
+  input:focus, select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(255, 60, 60, 0.1);
+  }
+
+  input::placeholder { color: #333; }
+
+  select option { background: var(--surface2); }
+
+  /* Toggle switches */
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .toggle-row:last-child { border-bottom: none; }
+
+  .toggle-info { flex: 1; }
+
+  .toggle-info strong {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+
+  .toggle-info span {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .toggle {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+    margin-left: 16px;
+  }
+
+  .toggle input { opacity: 0; width: 0; height: 0; }
+
+  .toggle-slider {
+    position: absolute;
+    inset: 0;
+    background: var(--border);
+    border-radius: 100px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+
+  .toggle-slider::before {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    left: 3px;
+    top: 3px;
+    background: #555;
+    border-radius: 50%;
+    transition: transform 0.3s, background 0.3s;
+  }
+
+  .toggle input:checked + .toggle-slider { background: rgba(255,60,60,0.2); }
+  .toggle input:checked + .toggle-slider::before {
+    transform: translateX(20px);
+    background: var(--accent);
+    box-shadow: 0 0 8px rgba(255,60,60,0.5);
+  }
+
+  /* Time inputs row */
+  .time-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  /* Threshold input with unit */
+  .input-with-unit {
+    position: relative;
+  }
+
+  .input-with-unit input { padding-right: 60px; }
+
+  .input-unit {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    pointer-events: none;
+  }
+
+  /* Test preview box */
+  .preview-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    line-height: 1.8;
+    color: #888;
+    min-height: 120px;
+  }
+
+  .preview-box .preview-subject {
+    color: var(--text);
+    font-weight: 500;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .preview-box .highlight { color: var(--accent2); }
+  .preview-box .value { color: var(--green); }
+
+  /* Buttons */
+  .btn-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    padding: 14px 28px;
+    border-radius: 10px;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #ff3c3c, #ff7a00);
+    color: white;
+    box-shadow: 0 4px 20px rgba(255,60,60,0.3);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(255,60,60,0.4);
+  }
+
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-ghost {
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+
+  .btn-ghost:hover { border-color: #444; background: #1f1f1f; }
+
+  .btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none !important;
+  }
+
+  /* Toast notification */
+  .toast {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    font-family: 'JetBrains Mono', monospace;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 1000;
+    max-width: 320px;
+  }
+
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.success { border-color: rgba(0,230,118,0.3); }
+  .toast.error { border-color: rgba(255,60,60,0.3); }
+
+  .toast-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .toast.success .toast-icon { background: rgba(0,230,118,0.1); }
+  .toast.error .toast-icon { background: rgba(255,60,60,0.1); }
+
+  /* Log section */
+  .log-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .log-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    background: var(--surface2);
+    border-radius: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    animation: slideIn 0.3s ease;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .log-time { color: var(--muted); flex-shrink: 0; }
+  .log-msg { color: #aaa; flex: 1; }
+  .log-badge {
+    padding: 2px 8px;
+    border-radius: 100px;
+    font-size: 10px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .log-badge.sent { background: rgba(0,230,118,0.1); color: var(--green); }
+  .log-badge.failed { background: rgba(255,60,60,0.1); color: var(--accent); }
+  .log-badge.scheduled { background: rgba(255,122,0,0.1); color: var(--accent2); }
+
+  .empty-log {
+    text-align: center;
+    padding: 32px;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  /* Section divider */
+  .section-gap { margin-bottom: 20px; }
+
+  /* Accent line */
+  .accent-line {
+    width: 40px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 2px;
+    margin-bottom: 24px;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <div class="logo">
+      <div class="logo-name">NazarVyapar</div>
+      <div class="logo-tagline">Retail Footfall Analyzer · Email Alerts</div>
+    </div>
+    <div class="status-pill">
+      <div class="status-dot"></div>
+      <span id="statusText">EmailJS Ready</span>
+    </div>
+  </header>
+
+  <div class="page-title">
+    <h1>Alert <span>Configuration</span></h1>
+    <p>// configure emailjs · set thresholds · schedule daily reports</p>
+  </div>
+
+  <!-- Row 1: EmailJS Config + Alert Triggers -->
+  <div class="grid section-gap">
+
+    <!-- EmailJS Config -->
+    <div class="card">
+      <div class="card-label">EmailJS Setup</div>
+      <div class="accent-line"></div>
+
+      <div class="form-group">
+        <label>Public Key</label>
+        <input type="text" id="publicKey" placeholder="e.g. user_xxxxxxxxxxxxxxx" />
+      </div>
+      <div class="form-group">
+        <label>Service ID</label>
+        <input type="text" id="serviceId" placeholder="e.g. service_xxxxxxx" />
+      </div>
+      <div class="form-group">
+        <label>Template ID</label>
+        <input type="text" id="templateId" placeholder="e.g. template_xxxxxxx" />
+      </div>
+      <div class="form-group">
+        <label>Shop Owner Email</label>
+        <input type="email" id="ownerEmail" placeholder="owner@gmail.com" />
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="saveConfig()">
+          <span>💾</span> Save Config
+        </button>
+        <button class="btn btn-ghost" onclick="testEmail()">
+          <span>⚡</span> Test Email
+        </button>
+      </div>
+    </div>
+
+    <!-- Alert Triggers -->
+    <div class="card">
+      <div class="card-label">Alert Triggers</div>
+      <div class="accent-line"></div>
+
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <strong>Daily Summary</strong>
+          <span>Send report every evening</span>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="toggleDaily" checked onchange="updateSchedule()">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <strong>Peak Hour Alert</strong>
+          <span>Notify when busiest hour starts</span>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="togglePeak" onchange="updateSchedule()">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <strong>Low Footfall Warning</strong>
+          <span>Alert if count drops below threshold</span>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="toggleLow" onchange="updateSchedule()">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <strong>Weekly Report</strong>
+          <span>Every Monday morning</span>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="toggleWeekly" onchange="updateSchedule()">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Row 2: Schedule + Thresholds -->
+  <div class="grid section-gap">
+
+    <div class="card">
+      <div class="card-label">Schedule</div>
+      <div class="accent-line"></div>
+      <div class="time-grid">
+        <div class="form-group">
+          <label>Daily Report Time</label>
+          <input type="time" id="dailyTime" value="21:00" />
+        </div>
+        <div class="form-group">
+          <label>Weekly Report Day</label>
+          <select id="weeklyDay">
+            <option value="1">Monday</option>
+            <option value="2">Tuesday</option>
+            <option value="5">Friday</option>
+            <option value="0">Sunday</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Timezone</label>
+        <select id="timezone">
+          <option value="Asia/Kolkata">IST — Asia/Kolkata</option>
+          <option value="UTC">UTC</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Thresholds</div>
+      <div class="accent-line"></div>
+      <div class="form-group">
+        <label>Low Footfall Threshold</label>
+        <div class="input-with-unit">
+          <input type="number" id="lowThreshold" value="10" min="1" />
+          <span class="input-unit">people</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Check Interval</label>
+        <div class="input-with-unit">
+          <input type="number" id="checkInterval" value="60" min="5" />
+          <span class="input-unit">min</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Backend API URL</label>
+        <input type="text" id="apiUrl" value="http://localhost:5000" placeholder="http://192.168.29.151:5000" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 3: Email Preview -->
+  <div class="grid section-gap">
+    <div class="card grid-full">
+      <div class="card-label">Email Preview</div>
+      <div class="accent-line"></div>
+      <div class="preview-box" id="previewBox">
+        <div class="preview-subject">📊 NazarVyapar — Daily Footfall Report · <span class="highlight">Tuesday, 19 May 2026</span></div>
+        <div>Total Visitors Today: <span class="value">157</span></div>
+        <div>Peak Hour: <span class="value">12:00 AM</span> &nbsp;|&nbsp; Avg/Hour: <span class="value">79</span></div>
+        <div>Avg Light Level: <span class="value">3697</span> (LDR reading)</div>
+        <div style="margin-top:12px; color:#444;">— Sent by NazarVyapar · Har ek kadam ginne wala</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 4: Log -->
+  <div class="grid section-gap">
+    <div class="card grid-full">
+      <div class="card-label">Notification Log</div>
+      <div class="accent-line"></div>
+      <div class="log-list" id="logList">
+        <div class="empty-log">// no emails sent yet — configure and test above</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <div class="toast-icon" id="toastIcon"></div>
+  <div>
+    <div id="toastTitle" style="font-weight:600; color: var(--text); margin-bottom:2px;"></div>
+    <div id="toastMsg" style="color: var(--muted);"></div>
+  </div>
+</div>
+
+<script>
+  // ── CONFIG ──
+  let config = {
+    publicKey: '',
+    serviceId: '',
+    templateId: '',
+    ownerEmail: '',
+    dailyTime: '21:00',
+    apiUrl: 'http://localhost:5000'
+  };
+
+  let scheduledTimers = [];
+  let logEntries = [];
+
+  // ── LOAD FROM LOCALSTORAGE ──
+  const saved = localStorage.getItem('nazarvyapar_email_config');
+  if (saved) {
+    config = { ...config, ...JSON.parse(saved) };
+    document.getElementById('publicKey').value   = config.publicKey   || '';
+    document.getElementById('serviceId').value   = config.serviceId   || '';
+    document.getElementById('templateId').value  = config.templateId  || '';
+    document.getElementById('ownerEmail').value  = config.ownerEmail  || '';
+    document.getElementById('apiUrl').value      = config.apiUrl      || 'http://localhost:5000';
+    document.getElementById('dailyTime').value   = config.dailyTime   || '21:00';
+    if (config.publicKey) {
+      emailjs.init(config.publicKey);
+      document.getElementById('statusText').textContent = 'EmailJS Initialized';
+    }
+  }
+
+  // ── SAVE CONFIG ──
+  function saveConfig() {
+    config.publicKey   = document.getElementById('publicKey').value.trim();
+    config.serviceId   = document.getElementById('serviceId').value.trim();
+    config.templateId  = document.getElementById('templateId').value.trim();
+    config.ownerEmail  = document.getElementById('ownerEmail').value.trim();
+    config.apiUrl      = document.getElementById('apiUrl').value.trim();
+    config.dailyTime   = document.getElementById('dailyTime').value;
+
+    if (!config.publicKey || !config.serviceId || !config.templateId || !config.ownerEmail) {
+      showToast('error', 'Missing Fields', 'Fill all EmailJS fields first.');
+      return;
+    }
+
+    localStorage.setItem('nazarvyapar_email_config', JSON.stringify(config));
+    emailjs.init(config.publicKey);
+    document.getElementById('statusText').textContent = 'EmailJS Initialized';
+    updateSchedule();
+    showToast('success', 'Config Saved', 'EmailJS initialized successfully.');
+    addLog('Config saved & EmailJS initialized', 'scheduled');
+  }
+
+  // ── FETCH STATS ──
+  async function fetchStats() {
+    try {
+      const res  = await fetch(config.apiUrl + '/api/footfall/stats/today');
+      const data = await res.json();
+      return data;
+    } catch(e) {
+      return { total: '--', peakHour: '--', avgLight: '--', hourly: [] };
+    }
+  }
+
+  // ── SEND EMAIL ──
+  async function sendEmail(subject, stats) {
+    if (!config.publicKey || !config.serviceId || !config.templateId) {
+      showToast('error', 'Not Configured', 'Save your EmailJS config first.');
+      return false;
+    }
+
+    const params = {
+      to_email:   config.ownerEmail,
+      subject:    subject,
+      total:      stats.total,
+      peak_hour:  stats.peakHour !== undefined ? stats.peakHour + ':00' : '--',
+      avg_light:  stats.avgLight || '--',
+      date:       new Date().toLocaleDateString('en-IN', { weekday:'long', year:'numeric', month:'long', day:'numeric' })
+    };
+
+    try {
+      await emailjs.send(config.serviceId, config.templateId, params);
+      return true;
+    } catch(e) {
+      return false;
+    }
+  }
+
+  // ── TEST EMAIL ──
+  async function testEmail() {
+    if (!config.publicKey) {
+      showToast('error', 'Not Configured', 'Save your EmailJS config first.');
+      return;
+    }
+    showToast('success', 'Sending...', 'Fetching stats and sending test email.');
+    const stats  = await fetchStats();
+    const result = await sendEmail('NazarVyapar — Test Alert', stats);
+    if (result) {
+      showToast('success', 'Email Sent!', 'Check ' + config.ownerEmail);
+      addLog('Test email sent to ' + config.ownerEmail, 'sent');
+    } else {
+      showToast('error', 'Send Failed', 'Check your EmailJS credentials.');
+      addLog('Test email failed', 'failed');
+    }
+  }
+
+  // ── SCHEDULE ──
+  function updateSchedule() {
+    scheduledTimers.forEach(t => clearTimeout(t));
+    scheduledTimers = [];
+
+    if (document.getElementById('toggleDaily').checked) scheduleDailyReport();
+    if (document.getElementById('toggleLow').checked)   scheduleLowCheck();
+  }
+
+  function scheduleDailyReport() {
+    const [h, m]   = config.dailyTime.split(':').map(Number);
+    const now      = new Date();
+    const target   = new Date();
+    target.setHours(h, m, 0, 0);
+    if (now >= target) target.setDate(target.getDate() + 1);
+
+    const delay = target - now;
+    const mins  = Math.round(delay / 60000);
+    addLog('Daily report scheduled in ' + mins + ' min', 'scheduled');
+
+    const t = setTimeout(async () => {
+      const stats  = await fetchStats();
+      const result = await sendEmail('NazarVyapar — Daily Report', stats);
+      addLog('Daily report ' + (result ? 'sent' : 'failed'), result ? 'sent' : 'failed');
+      showToast(result ? 'success' : 'error', result ? 'Daily Report Sent' : 'Report Failed', result ? 'Delivered to ' + config.ownerEmail : 'Check credentials.');
+      scheduleDailyReport();
+    }, delay);
+
+    scheduledTimers.push(t);
+  }
+
+  function scheduleLowCheck() {
+    const interval = parseInt(document.getElementById('checkInterval').value) * 60000;
+    const threshold = parseInt(document.getElementById('lowThreshold').value);
+
+    const t = setInterval(async () => {
+      const stats = await fetchStats();
+      if (stats.total !== '--' && stats.total < threshold) {
+        const result = await sendEmail('NazarVyapar ⚠️ Low Footfall Alert', stats);
+        addLog('Low footfall alert ' + (result ? 'sent' : 'failed') + ' (count: ' + stats.total + ')', result ? 'sent' : 'failed');
+      }
+    }, interval);
+
+    scheduledTimers.push(t);
+  }
+
+  // ── LOG ──
+  function addLog(msg, type) {
+    const now   = new Date();
+    const time  = now.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit' });
+    logEntries.unshift({ time, msg, type });
+    if (logEntries.length > 20) logEntries.pop();
+    renderLog();
+  }
+
+  function renderLog() {
+    const el = document.getElementById('logList');
+    if (logEntries.length === 0) {
+      el.innerHTML = '<div class="empty-log">// no emails sent yet — configure and test above</div>';
+      return;
+    }
+    el.innerHTML = logEntries.map(e => `
+      <div class="log-item">
+        <span class="log-time">${e.time}</span>
+        <span class="log-msg">${e.msg}</span>
+        <span class="log-badge ${e.type}">${e.type}</span>
+      </div>
+    `).join('');
+  }
+
+  // ── TOAST ──
+  function showToast(type, title, msg) {
+    const toast = document.getElementById('toast');
+    toast.className = 'toast ' + type;
+    document.getElementById('toastIcon').textContent = type === 'success' ? '✓' : '✕';
+    document.getElementById('toastTitle').textContent = title;
+    document.getElementById('toastMsg').textContent   = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 4000);
+  }
+
+  // init schedule if toggles are on
+  updateSchedule();
+</script>
+</body>
+</html>

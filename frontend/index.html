@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NazarVyapar — Retail Footfall Analyzer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css" />
+
+  <style>
+    /* ── ToS Modal Overlay ── */
+    .tos-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+      z-index: 100;
+    }
+    .tos-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* ── Sheet ── */
+    .tos-sheet {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      width: 100%;
+      max-width: 720px;
+      max-height: 82vh;
+      overflow-y: auto;
+      transform: translateY(100%);
+      transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+      scrollbar-width: thin;
+      scrollbar-color: var(--border-strong) transparent;
+    }
+    .tos-overlay.open .tos-sheet {
+      transform: translateY(0);
+    }
+
+    /* ── Sheet header ── */
+    .tos-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 22px 28px 18px;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: var(--bg2);
+      z-index: 1;
+    }
+    .tos-head-title {
+      font-family: var(--font-head);
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+    .tos-close {
+      background: var(--bg3);
+      border: 1px solid var(--border-strong);
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1;
+      transition: background 0.15s, color 0.15s;
+    }
+    .tos-close:hover {
+      background: var(--bg4);
+      color: var(--text);
+    }
+
+    /* ── Sheet body ── */
+    .tos-body {
+      padding: 24px 28px 40px;
+      font-size: 14px;
+      line-height: 1.72;
+      color: var(--text-body);
+    }
+
+    .tos-hero {
+      background: var(--accent-muted);
+      border: 1px solid var(--accent);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      margin-bottom: 24px;
+    }
+    .tos-hero-title {
+      font-family: var(--font-head);
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+    .tos-hero-sub {
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.02em;
+    }
+
+    .tos-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+      background: rgba(62, 207, 142, 0.12);
+      color: var(--success);
+      border: 1px solid rgba(62, 207, 142, 0.25);
+      margin-bottom: 20px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .tos-body h2 {
+      font-family: var(--font-head);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin: 24px 0 8px;
+    }
+    .tos-body h2:first-of-type {
+      margin-top: 0;
+    }
+    .tos-body p {
+      margin-bottom: 10px;
+      color: var(--text-body);
+    }
+
+    .tos-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 20px 0;
+    }
+
+    /* ── Developer card ── */
+    .tos-dev-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      background: var(--bg3);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+      margin-top: 12px;
+    }
+    .tos-avatar {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: var(--accent-muted);
+      border: 1px solid var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-head);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+    .tos-dev-name {
+      font-family: var(--font-head);
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .tos-dev-role {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .tos-dev-bio {
+      font-size: 13px;
+      color: var(--text-body);
+      margin-top: 10px;
+      line-height: 1.65;
+    }
+    .tos-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 12px;
+    }
+    .tos-tag {
+      font-size: 11px;
+      font-weight: 500;
+      padding: 3px 10px;
+      border-radius: var(--radius-xs);
+      background: var(--bg4);
+      border: 1px solid var(--border-strong);
+      color: var(--muted);
+      letter-spacing: 0.03em;
+    }
+
+    .tos-link {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .tos-link:hover {
+      text-decoration: underline;
+      color: var(--accent2);
+    }
+
+    .tos-footer-note {
+      margin-top: 20px;
+      font-size: 12px;
+      color: var(--muted-soft);
+    }
+
+    /* ── Impact table ── */
+    .tos-impact {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0 16px;
+      font-size: 13px;
+    }
+    .tos-impact th {
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--muted);
+      padding: 6px 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .tos-impact td {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--border-soft);
+      color: var(--text-body);
+      vertical-align: top;
+    }
+    .tos-impact td:first-child {
+      color: var(--muted);
+      width: 38%;
+    }
+    .tos-impact tr:last-child td {
+      border-bottom: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-eye">👁</span>
+      <div>
+        <div class="brand-name">NazarVyapar</div>
+        <div class="brand-sub">Footfall Intelligence</div>
+      </div>
+    </div>
+    <nav class="nav">
+      <a href="#" class="nav-item active" data-page="dashboard">
+        <span class="nav-icon">◈</span> Dashboard
+      </a>
+      <a href="#" class="nav-item" data-page="weekly">
+        <span class="nav-icon">◉</span> Weekly View
+      </a>
+      <a href="#" class="nav-item" data-page="light">
+        <span class="nav-icon">◎</span> Light Analysis
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="live-dot"></div>
+      <span>Live — sensor active</span>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div>
+        <h1 class="page-title" id="pageTitle">Today's Overview</h1>
+        <p class="page-date" id="pageDate"></p>
+      </div>
+      <button class="refresh-btn" onclick="refreshAll()">↺ Refresh</button>
+    </header>
+
+    <!-- STAT CARDS -->
+    <section class="cards" id="statCards">
+      <div class="card" id="cardTotal">
+        <div class="card-label">Total Visitors</div>
+        <div class="card-value" id="totalVal">—</div>
+        <div class="card-sub">today</div>
+      </div>
+      <div class="card accent" id="cardPeak">
+        <div class="card-label">Peak Hour</div>
+        <div class="card-value" id="peakVal">—</div>
+        <div class="card-sub">busiest slot</div>
+      </div>
+      <div class="card" id="cardAvg">
+        <div class="card-label">Avg / Hour</div>
+        <div class="card-value" id="avgVal">—</div>
+        <div class="card-sub">active hours only</div>
+      </div>
+      <div class="card" id="cardLight">
+        <div class="card-label">Avg Light Level</div>
+        <div class="card-value" id="lightVal">—</div>
+        <div class="card-sub">LDR reading</div>
+      </div>
+    </section>
+
+    <!-- PAGES -->
+    <section class="page active" id="page-dashboard">
+      <div class="chart-box">
+        <div class="chart-header">
+          <span class="chart-title">Hourly Footfall — Today</span>
+          <span class="chart-hint">each bar = 1 hour</span>
+        </div>
+        <canvas id="hourlyChart"></canvas>
+      </div>
+    </section>
+
+    <section class="page" id="page-weekly">
+      <div class="chart-box">
+        <div class="chart-header">
+          <span class="chart-title">Weekly Footfall</span>
+          <span class="chart-hint">last 7 days</span>
+        </div>
+        <canvas id="weeklyChart"></canvas>
+      </div>
+    </section>
+
+    <section class="page" id="page-light">
+      <div class="chart-box">
+        <div class="chart-header">
+          <span class="chart-title">Light Level vs Footfall</span>
+          <span class="chart-hint">LDR value by hour today</span>
+        </div>
+        <canvas id="lightChart"></canvas>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <span>© 2026 NazarVyapar.</span>
+    <span><a href="#" id="tosLink">Terms of Service</a></span>
+    <span class="dev-credit">Built by <a href="https://siddharthkumar.tech" target="_blank">Siddharth Kumar</a></span>
+  </footer>
+
+
+  <!-- ═══════════════════════════════════════
+       TERMS OF SERVICE MODAL
+  ════════════════════════════════════════ -->
+  <div class="tos-overlay" id="tosOverlay" role="dialog" aria-modal="true" aria-labelledby="tosSheetTitle">
+    <div class="tos-sheet" id="tosSheet">
+
+      <div class="tos-head">
+        <span class="tos-head-title" id="tosSheetTitle">Terms of Service</span>
+        <button class="tos-close" id="tosClose" aria-label="Close terms of service">✕</button>
+      </div>
+
+      <div class="tos-body">
+
+        <!-- Hero strip -->
+        <div class="tos-hero">
+          <div class="tos-hero-title">NazarVyapar — Retail Footfall Intelligence</div>
+          <div class="tos-hero-sub">Hardware cost ₹300 &nbsp;·&nbsp; Built for Indian small businesses &nbsp;·&nbsp; Effective: January 1, 2026</div>
+        </div>
+
+        <div class="tos-badge">✦ Open-source &amp; honest</div>
+
+        <!-- About -->
+        <h2>About this project</h2>
+        <p>
+          NazarVyapar was built by <strong style="color:var(--text)">Siddharth Kumar</strong> to give Indian small business
+          owners — kirana stores, salons, medical shops, clothing outlets — the same footfall intelligence
+          that large retail chains pay lakhs for, at a total hardware cost of under ₹300.
+          No subscription. No vendor lock-in. No data sold to advertisers.
+        </p>
+        <p>
+          By using NazarVyapar you acknowledge that you are accessing a tool designed in good faith
+          to solve a real problem for real people.
+        </p>
+
+        <!-- Real-world impact -->
+        <h2>Real-world impact</h2>
+        <table class="tos-impact">
+          <thead>
+            <tr>
+              <th>Problem</th>
+              <th>How NazarVyapar solves it</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>"I don't know my peak hours"</td>
+              <td>Hourly footfall bar chart updated in real time</td>
+            </tr>
+            <tr>
+              <td>"My offer didn't work?"</td>
+              <td>Before / after footfall comparison by day</td>
+            </tr>
+            <tr>
+              <td>"Hire extra help on Sunday?"</td>
+              <td>Weekly pattern view across 7 days</td>
+            </tr>
+            <tr>
+              <td>"Does lighting affect customers?"</td>
+              <td>LDR vs footfall correlation chart</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="tos-divider"></div>
+
+        <!-- Data -->
+        <h2>Data collected</h2>
+        <p>
+          The system collects <strong style="color:var(--text)">entry count events</strong> from your PIR sensor
+          and <strong style="color:var(--text)">ambient light readings</strong> (LDR analog values).
+          No personal data — no faces, no biometrics, no identifiers — is ever collected, processed, or transmitted.
+          All data is stored in your own MongoDB Atlas instance and never shared with third parties.
+        </p>
+
+        <h2>Your data, your server</h2>
+        <p>
+          NazarVyapar is entirely self-hosted. Your ESP32 posts data directly to your own Express backend.
+          Siddharth Kumar and all project contributors have zero access to your store's data at any time.
+        </p>
+
+        <h2>Telegram alerts</h2>
+        <p>
+          If you enable the daily summary bot, your Telegram chat ID and bot token are stored only in
+          your own <code style="background:var(--bg4);padding:1px 5px;border-radius:4px;font-size:12px">.env</code>
+          file on your server. They are never transmitted to any NazarVyapar service.
+        </p>
+
+        <h2>ML peak-hour predictions</h2>
+        <p>
+          Predictions run entirely on your local machine using scikit-learn and a locally saved
+          <code style="background:var(--bg4);padding:1px 5px;border-radius:4px;font-size:12px">model.pkl</code>.
+          No data leaves your network during inference.
+        </p>
+
+        <h2>Limitation of liability</h2>
+        <p>
+          NazarVyapar is provided as-is, without warranty of any kind. While every effort has been made
+          to ensure accuracy of footfall counts, PIR sensors (HC-SR501) may occasionally misfire in
+          high-heat or high-reflectivity environments. Business decisions based on this data are made
+          entirely at your own discretion and risk.
+        </p>
+
+        <h2>Open source &amp; contributions</h2>
+        <p>
+          This project is open source. Bug reports, feature suggestions, and pull requests are welcome.
+          By contributing code you agree to license your contribution under the same terms as the project repository.
+        </p>
+
+        <div class="tos-divider"></div>
+
+        <!-- Developer card -->
+        <h2>Built by</h2>
+        <div class="tos-dev-card">
+          <div class="tos-avatar">SK</div>
+          <div style="flex:1;min-width:0">
+            <div class="tos-dev-name">Siddharth Kumar</div>
+            <div class="tos-dev-role">Developer &amp; creator — NazarVyapar</div>
+            <div class="tos-dev-bio">
+              Siddharth built NazarVyapar after seeing firsthand how small shop owners make critical
+              business decisions — staffing, timings, promotions — without any data to back them up.
+              Enterprise footfall systems cost ₹50,000+, putting them far beyond what a kirana owner
+              earning ₹30,000/month can afford. His answer: a full stack spanning ESP32 firmware,
+              an Express + MongoDB backend, a Chart.js dashboard, a Telegram summary bot, and a
+              scikit-learn peak-hour predictor — all reproducible for under ₹300 in hardware.
+              The goal is simple: bring retail intelligence to every small business in India.
+            </div>
+            <div class="tos-tags">
+              <span class="tos-tag">ESP32 · Arduino C</span>
+              <span class="tos-tag">Node.js · Express</span>
+              <span class="tos-tag">MongoDB Atlas</span>
+              <span class="tos-tag">Chart.js · Vanilla JS</span>
+              <span class="tos-tag">Python · scikit-learn</span>
+              <span class="tos-tag">Telegram Bot API</span>
+            </div>
+          </div>
+        </div>
+
+        <p class="tos-footer-note">
+          Questions or concerns?
+          <a class="tos-link" href="https://siddharthkumar.tech" target="_blank">siddharthkumar.tech</a>
+          &nbsp;·&nbsp; Last updated January 2026
+        </p>
+
+      </div>
+    </div>
+  </div>
+  <!-- end ToS modal -->
+
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/dashboard.js"></script>
+
+  <script>
+    /* ── Terms of Service modal ── */
+    (function () {
+      var overlay  = document.getElementById('tosOverlay');
+      var link     = document.getElementById('tosLink');
+      var closeBtn = document.getElementById('tosClose');
+
+      function openTos()  { overlay.classList.add('open');    document.body.style.overflow = 'hidden'; }
+      function closeTos() { overlay.classList.remove('open'); document.body.style.overflow = '';       }
+
+      link.addEventListener('click',    function (e) { e.preventDefault(); openTos(); });
+      closeBtn.addEventListener('click', closeTos);
+      overlay.addEventListener('click',  function (e) { if (e.target === overlay) closeTos(); });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeTos(); });
+    })();
+  </script>
+
+</body>
+</html>

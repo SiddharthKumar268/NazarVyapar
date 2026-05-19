@@ -1,0 +1,79 @@
+═══════════════════════════════════════════════════
+       NazarVyapar — ML Training Report            
+       19 May 2026 · 17:00:14
+═══════════════════════════════════════════════════
+
+DATASET
+  Total records     : 168
+  Train size        : 134
+  Test size         : 34
+  Features          : ['hour', 'day_encoded', 'light', 'is_weekend', 'is_morning', 'is_evening', 'is_night', 'light_bucket']
+  Target            : count
+  Avg footfall/slot : 1196.13
+  Max footfall/slot : 3680
+  Min footfall/slot : 23
+
+───────────────────────────────────────────────────
+MODEL : Gradient Boosting
+
+  MAE             : 79.9455 visitors
+  RMSE            : 124.2755
+  MSE             : 15444.3964
+  R² Score        : 0.9799  (1.0 = perfect)
+  Approx Accuracy : 93.32%
+  CV MAE (5-fold) : 114.0286
+  CV Std Dev      : 23.0328
+  Overfit Gap     : 34.0831  ✓ low
+
+  Feature Importance:
+    hour            :  41.56%  ████████████████
+    light           :   38.9%  ███████████████
+    day_encoded     :  10.45%  ████
+    is_night        :    3.7%  █
+    is_evening      :   3.35%  █
+    light_bucket    :   1.95%  
+    is_weekend      :   0.07%  
+    is_morning      :   0.01%  
+
+───────────────────────────────────────────────────
+MODEL : Random Forest
+
+  MAE             : 163.0481 visitors
+  RMSE            : 221.2211
+  MSE             : 48938.7856
+  R² Score        : 0.9362  (1.0 = perfect)
+  Approx Accuracy : 86.37%
+  CV MAE (5-fold) : 257.1603
+  CV Std Dev      : 66.8279
+  Overfit Gap     : 94.1122  ✓ low
+
+  Feature Importance:
+    light           :  31.01%  ████████████
+    hour            :  22.93%  █████████
+    light_bucket    :  18.88%  ███████
+    is_night        :  14.38%  █████
+    is_evening      :   4.87%  █
+    day_encoded     :   4.25%  █
+    is_morning      :   2.95%  █
+    is_weekend      :   0.74%  
+
+───────────────────────────────────────────────────
+MODEL : Ridge Regression
+
+  MAE             : 239.1951 visitors
+  RMSE            : 319.9915
+  MSE             : 102394.5284
+  R² Score        : 0.8665  (1.0 = perfect)
+  Approx Accuracy : 80.0%
+  CV MAE (5-fold) : 332.3147
+  CV Std Dev      : 59.5785
+  Overfit Gap     : 93.1197  ✓ low
+
+
+═══════════════════════════════════════════════════
+BEST MODEL : Gradient Boosting
+  Test MAE : 79.9455 visitors
+  CV MAE   : 114.0286
+  Overfit  : 34.0831
+  Saved as : model.pkl
+═══════════════════════════════════════════════════
