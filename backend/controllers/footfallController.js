@@ -1,7 +1,6 @@
-// controllers/footfallController.js
 const FootfallEntry = require('../models/FootfallEntry');
 
-// POST /api/footfall/log  — called by ESP32
+// POST  api to catch mera data/api/footfall/log  — called by ESP32
 const logEntry = async (req, res) => {
   try {
     const { count, light } = req.body;
@@ -44,7 +43,7 @@ const getToday = async (req, res) => {
   }
 };
 
-// GET /api/footfall/stats/weekly
+// GET one to call mera /api/footfall/stats/weekly
 const getWeekly = async (req, res) => {
   try {
     const start = new Date();
