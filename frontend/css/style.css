@@ -1,8 +1,5 @@
-/* ── NazarVyapar — Airbnb Design Language · Dark Mode ── */
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap');
-
 :root {
-  /* ── Surfaces ── */
   --bg:          #111111;
   --bg2:         #1a1a1a;
   --bg3:         #222222;
@@ -10,29 +7,19 @@
   --border:      #2e2e2e;
   --border-soft: #252525;
   --border-strong:#3d3d3d;
-
-  /* ── Brand ── */
   --accent:          #ff385c;
   --accent2:         #ff1a45;
   --accent-muted:    #3d0d17;
   --accent-disabled: #5c1824;
-
-  /* ── Text ── */
   --text:       #f0ede8;
   --text-body:  #c8c5c0;
   --muted:      #7a7878;
   --muted-soft: #555353;
   --on-accent:  #ffffff;
-
-  /* ── Semantic ── */
   --success:  #3ecf8e;
   --error:    #ff6b6b;
-
-  /* ── Typography ── */
   --font-head: 'DM Sans', -apple-system, system-ui, sans-serif;
   --font-body: 'DM Sans', -apple-system, system-ui, sans-serif;
-
-  /* ── Radius ── */
   --radius-xs:   4px;
   --radius-sm:   8px;
   --radius-md:  14px;
@@ -40,8 +27,6 @@
   --radius-xl:  32px;
   --radius-full:9999px;
   --radius:     14px;
-
-  /* ── Spacing ── */
   --sp-xxs:  2px;
   --sp-xs:   4px;
   --sp-sm:   8px;
@@ -51,12 +36,8 @@
   --sp-xl:  32px;
   --sp-xxl: 48px;
   --sp-section: 64px;
-
-  /* ── Layout ── */
   --sidebar-w: 220px;
   --footer-h:  52px;
-
-  /* ── Elevation ── */
   --shadow-card: rgba(0,0,0,0.25) 0 0 0 1px,
                  rgba(0,0,0,0.30) 0 2px 6px 0,
                  rgba(0,0,0,0.45) 0 4px 16px 0;
@@ -64,7 +45,6 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
 body {
   background: var(--bg);
   color: var(--text);
@@ -74,10 +54,6 @@ body {
   line-height: 1.43;
   -webkit-font-smoothing: antialiased;
 }
-
-/* ─────────────────────────────────────────
-   SIDEBAR
-───────────────────────────────────────── */
 .sidebar {
   width: var(--sidebar-w);
   background: var(--bg2);
@@ -91,7 +67,6 @@ body {
   height: calc(100vh - var(--footer-h));
   z-index: 10;
 }
-
 .brand {
   display: flex;
   align-items: center;
@@ -118,7 +93,6 @@ body {
   font-weight: 500;
   line-height: 1.4;
 }
-
 .nav {
   display: flex;
   flex-direction: column;
@@ -171,20 +145,12 @@ body {
   0%, 100% { opacity: 1; }
   50%       { opacity: 0.3; }
 }
-
-/* ─────────────────────────────────────────
-   MAIN CONTENT
-───────────────────────────────────────── */
 .main {
   margin-left: var(--sidebar-w);
   padding: var(--sp-xl) 36px;
   padding-bottom: calc(var(--footer-h) + var(--sp-xl));
   max-width: 1100px;
 }
-
-/* ─────────────────────────────────────────
-   TOPBAR
-───────────────────────────────────────── */
 .topbar {
   display: flex;
   align-items: flex-start;
@@ -224,10 +190,6 @@ body {
   background: var(--bg3);
   border-color: var(--text);
 }
-
-/* ─────────────────────────────────────────
-   STAT CARDS
-───────────────────────────────────────── */
 .cards {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -274,10 +236,6 @@ body {
   color: var(--muted);
   font-weight: 400;
 }
-
-/* ─────────────────────────────────────────
-   CHART BOX
-───────────────────────────────────────── */
 .chart-box {
   background: var(--bg2);
   border: 1px solid var(--border);
@@ -304,16 +262,8 @@ body {
   font-weight: 400;
 }
 canvas { max-height: 320px; }
-
-/* ─────────────────────────────────────────
-   PAGE VISIBILITY
-───────────────────────────────────────── */
 .page { display: none; }
 .page.active { display: block; }
-
-/* ─────────────────────────────────────────
-   BUTTONS
-───────────────────────────────────────── */
 .btn-primary {
   background: var(--accent);
   color: var(--on-accent);
@@ -351,10 +301,6 @@ canvas { max-height: 320px; }
   background: var(--bg3);
   border-color: var(--text);
 }
-
-/* ─────────────────────────────────────────
-   FORM INPUTS
-───────────────────────────────────────── */
 .input {
   background: var(--bg4);
   color: var(--text);
@@ -371,10 +317,6 @@ canvas { max-height: 320px; }
 }
 .input:focus        { border: 2px solid var(--text); }
 .input::placeholder { color: var(--muted); }
-
-/* ─────────────────────────────────────────
-   ANIMATIONS
-───────────────────────────────────────── */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -383,10 +325,6 @@ canvas { max-height: 320px; }
 .cards .card:nth-child(2) { animation-delay: 0.10s; }
 .cards .card:nth-child(3) { animation-delay: 0.15s; }
 .cards .card:nth-child(4) { animation-delay: 0.20s; }
-
-/* ─────────────────────────────────────────
-   FOOTER — fixed, full width, bottom of screen
-───────────────────────────────────────── */
 .footer {
   position: fixed;
   bottom: 0;
@@ -418,10 +356,6 @@ canvas { max-height: 320px; }
   font-weight: 500;
 }
 .footer .dev-credit a:hover { color: var(--accent2); }
-
-/* ─────────────────────────────────────────
-   RESPONSIVE
-───────────────────────────────────────── */
 @media (max-width: 900px) {
   .cards { grid-template-columns: repeat(2, 1fr); }
 }
