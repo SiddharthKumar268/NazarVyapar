@@ -1,38 +1,26 @@
-// js/dashboard.js — main controller
-
-// ── DATE ──
 document.getElementById('pageDate').textContent = new Date().toLocaleDateString('en-IN', {
   weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
 });
-
-// ── NAV ──
 const navItems = document.querySelectorAll('.nav-item');
 const pages    = document.querySelectorAll('.page');
 const titles   = { dashboard: "Today's Overview", weekly: "Weekly View", light: "Light Analysis" };
-
 navItems.forEach(item => {
   item.addEventListener('click', e => {
     e.preventDefault();
     const target = item.dataset.page;
-
     navItems.forEach(n => n.classList.remove('active'));
     pages.forEach(p => p.classList.remove('active'));
-
     item.classList.add('active');
     document.getElementById('page-' + target).classList.add('active');
     document.getElementById('pageTitle').textContent = titles[target];
-
     if (target === 'weekly') loadWeekly();
     if (target === 'light')  loadLight();
   });
 });
-
-// ── LOAD TODAY ──
 async function loadToday() {
   try {
     const data = await API.today();
     if (!data.success) return;
-
     document.getElementById('totalVal').textContent = data.total;
 
     const peakH = data.peakHour;
@@ -52,8 +40,6 @@ document.getElementById('tosLink').addEventListener('click', e => { e.preventDef
 document.getElementById('tosClose').addEventListener('click', () => overlay.classList.remove('open'));
 overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') overlay.classList.remove('open'); });
-
-// ── LOAD LIGHT (for stat card) ──
 async function loadLightStat() {
   try {
     const data = await API.light();
@@ -64,8 +50,6 @@ async function loadLightStat() {
     console.error('loadLightStat error:', err);
   }
 }
-
-// ── LOAD WEEKLY ──
 async function loadWeekly() {
   try {
     const data = await API.weekly();
@@ -75,8 +59,6 @@ async function loadWeekly() {
     console.error('loadWeekly error:', err);
   }
 }
-
-// ── LOAD LIGHT CHART ──
 async function loadLight() {
   try {
     const data = await API.light();
@@ -86,8 +68,6 @@ async function loadLight() {
     console.error('loadLight error:', err);
   }
 }
-
-// ── REFRESH ──
 function refreshAll() {
   loadToday();
   loadLightStat();
