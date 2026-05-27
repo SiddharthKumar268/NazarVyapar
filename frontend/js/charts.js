@@ -1,11 +1,8 @@
-// js/charts.js — Chart.js wrappers
-
 const ACCENT   = '#e8a020';
 const ACCENT2  = '#f0c060';
 const MUTED    = '#2a2a35';
 const TEXT     = '#7a7880';
 const SUCCESS  = '#3ecf8e';
-
 const chartDefaults = {
   responsive: true,
   maintainAspectRatio: true,
@@ -59,7 +56,6 @@ function buildHourlyChart(hourly) {
     options: { ...chartDefaults }
   });
 }
-
 function buildWeeklyChart(weekly) {
   const order = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
   const labels = order;
