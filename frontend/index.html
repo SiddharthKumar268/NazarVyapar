@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,9 +9,7 @@
     href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="css/style.css" />
-
   <style>
-    /* ── ToS Modal Overlay ── */
     .tos-overlay {
       position: fixed;
       inset: 0;
@@ -29,8 +26,6 @@
       opacity: 1;
       pointer-events: all;
     }
-
-    /* ── Sheet ── */
     .tos-sheet {
       background: var(--bg2);
       border: 1px solid var(--border);
@@ -47,8 +42,6 @@
     .tos-overlay.open .tos-sheet {
       transform: translateY(0);
     }
-
-    /* ── Sheet header ── */
     .tos-head {
       display: flex;
       align-items: center;
@@ -86,15 +79,12 @@
       background: var(--bg4);
       color: var(--text);
     }
-
-    /* ── Sheet body ── */
     .tos-body {
       padding: 24px 28px 40px;
       font-size: 14px;
       line-height: 1.72;
       color: var(--text-body);
     }
-
     .tos-hero {
       background: var(--accent-muted);
       border: 1px solid var(--accent);
@@ -130,7 +120,6 @@
       letter-spacing: 0.04em;
       text-transform: uppercase;
     }
-
     .tos-body h2 {
       font-family: var(--font-head);
       font-size: 13px;
@@ -147,14 +136,11 @@
       margin-bottom: 10px;
       color: var(--text-body);
     }
-
     .tos-divider {
       height: 1px;
       background: var(--border);
       margin: 20px 0;
     }
-
-    /* ── Developer card ── */
     .tos-dev-card {
       display: flex;
       align-items: flex-start;
@@ -229,8 +215,6 @@
       font-size: 12px;
       color: var(--muted-soft);
     }
-
-    /* ── Impact table ── */
     .tos-impact {
       width: 100%;
       border-collapse: collapse;
@@ -264,8 +248,6 @@
 </head>
 
 <body>
-
-  <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="brand">
       <span class="brand-eye">👁</span>
@@ -290,11 +272,7 @@
       <span>Live — sensor active</span>
     </div>
   </aside>
-
-  <!-- MAIN -->
   <main class="main">
-
-    <!-- TOPBAR -->
     <header class="topbar">
       <div>
         <h1 class="page-title" id="pageTitle">Today's Overview</h1>
@@ -302,8 +280,6 @@
       </div>
       <button class="refresh-btn" onclick="refreshAll()">↺ Refresh</button>
     </header>
-
-    <!-- STAT CARDS -->
     <section class="cards" id="statCards">
       <div class="card" id="cardTotal">
         <div class="card-label">Total Visitors</div>
@@ -326,8 +302,6 @@
         <div class="card-sub">LDR reading</div>
       </div>
     </section>
-
-    <!-- PAGES -->
     <section class="page active" id="page-dashboard">
       <div class="chart-box">
         <div class="chart-header">
@@ -337,7 +311,6 @@
         <canvas id="hourlyChart"></canvas>
       </div>
     </section>
-
     <section class="page" id="page-weekly">
       <div class="chart-box">
         <div class="chart-header">
@@ -347,7 +320,6 @@
         <canvas id="weeklyChart"></canvas>
       </div>
     </section>
-
     <section class="page" id="page-light">
       <div class="chart-box">
         <div class="chart-header">
@@ -357,39 +329,24 @@
         <canvas id="lightChart"></canvas>
       </div>
     </section>
-
   </main>
-
-  <!-- FOOTER -->
   <footer class="footer">
     <span>© 2026 NazarVyapar.</span>
     <span><a href="#" id="tosLink">Terms of Service</a></span>
     <span class="dev-credit">Built by <a href="https://siddharthkumar.tech" target="_blank">Siddharth Kumar</a></span>
   </footer>
-
-
-  <!-- ═══════════════════════════════════════
-       TERMS OF SERVICE MODAL
-  ════════════════════════════════════════ -->
   <div class="tos-overlay" id="tosOverlay" role="dialog" aria-modal="true" aria-labelledby="tosSheetTitle">
     <div class="tos-sheet" id="tosSheet">
-
       <div class="tos-head">
         <span class="tos-head-title" id="tosSheetTitle">Terms of Service</span>
         <button class="tos-close" id="tosClose" aria-label="Close terms of service">✕</button>
       </div>
-
       <div class="tos-body">
-
-        <!-- Hero strip -->
         <div class="tos-hero">
           <div class="tos-hero-title">NazarVyapar — Retail Footfall Intelligence</div>
           <div class="tos-hero-sub">Hardware cost ₹300 &nbsp;·&nbsp; Built for Indian small businesses &nbsp;·&nbsp; Effective: January 1, 2026</div>
         </div>
-
         <div class="tos-badge">✦ Open-source &amp; honest</div>
-
-        <!-- About -->
         <h2>About this project</h2>
         <p>
           NazarVyapar was built by <strong style="color:var(--text)">Siddharth Kumar</strong> to give Indian small business
@@ -401,8 +358,6 @@
           By using NazarVyapar you acknowledge that you are accessing a tool designed in good faith
           to solve a real problem for real people.
         </p>
-
-        <!-- Real-world impact -->
         <h2>Real-world impact</h2>
         <table class="tos-impact">
           <thead>
@@ -430,10 +385,7 @@
             </tr>
           </tbody>
         </table>
-
         <div class="tos-divider"></div>
-
-        <!-- Data -->
         <h2>Data collected</h2>
         <p>
           The system collects <strong style="color:var(--text)">entry count events</strong> from your PIR sensor
@@ -441,13 +393,11 @@
           No personal data — no faces, no biometrics, no identifiers — is ever collected, processed, or transmitted.
           All data is stored in your own MongoDB Atlas instance and never shared with third parties.
         </p>
-
         <h2>Your data, your server</h2>
         <p>
           NazarVyapar is entirely self-hosted. Your ESP32 posts data directly to your own Express backend.
           Siddharth Kumar and all project contributors have zero access to your store's data at any time.
         </p>
-
         <h2>Telegram alerts</h2>
         <p>
           If you enable the daily summary bot, your Telegram chat ID and bot token are stored only in
@@ -461,7 +411,6 @@
           <code style="background:var(--bg4);padding:1px 5px;border-radius:4px;font-size:12px">model.pkl</code>.
           No data leaves your network during inference.
         </p>
-
         <h2>Limitation of liability</h2>
         <p>
           NazarVyapar is provided as-is, without warranty of any kind. While every effort has been made
@@ -469,16 +418,12 @@
           high-heat or high-reflectivity environments. Business decisions based on this data are made
           entirely at your own discretion and risk.
         </p>
-
         <h2>Open source &amp; contributions</h2>
         <p>
           This project is open source. Bug reports, feature suggestions, and pull requests are welcome.
           By contributing code you agree to license your contribution under the same terms as the project repository.
         </p>
-
         <div class="tos-divider"></div>
-
-        <!-- Developer card -->
         <h2>Built by</h2>
         <div class="tos-dev-card">
           <div class="tos-avatar">SK</div>
@@ -504,26 +449,19 @@
             </div>
           </div>
         </div>
-
         <p class="tos-footer-note">
           Questions or concerns?
           <a class="tos-link" href="https://siddharthkumar.tech" target="_blank">siddharthkumar.tech</a>
           &nbsp;·&nbsp; Last updated January 2026
         </p>
-
       </div>
     </div>
   </div>
-  <!-- end ToS modal -->
-
-
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script src="js/api.js"></script>
   <script src="js/charts.js"></script>
   <script src="js/dashboard.js"></script>
-
   <script>
-    /* ── Terms of Service modal ── */
     (function () {
       var overlay  = document.getElementById('tosOverlay');
       var link     = document.getElementById('tosLink');
@@ -538,6 +476,5 @@
       document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeTos(); });
     })();
   </script>
-
 </body>
 </html>
